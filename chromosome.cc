@@ -26,7 +26,6 @@ Chromosome::Chromosome(const Cities* cities_ptr)
 Chromosome::~Chromosome()
 {
   assert(is_valid());
-  
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -34,9 +33,15 @@ Chromosome::~Chromosome()
 void
 Chromosome::mutate()
 {
-  // Add your implementation here
-
   assert(is_valid());
+  int firstIndex = generator_() % (order_.size() - 1);
+  int secondIndex;
+  do {
+    secondIndex = generator_() % (order_.size() - 1);
+  } while (secondIndex == firstIndex && order_.size() != 1);
+  int tempElement = order_[firstIndex];
+  order_[firstIndex] = order_[secondIndex];
+  order_[secondIndex] = order_[firstIndex];
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +53,16 @@ Chromosome::recombine(const Chromosome* other)
   assert(is_valid());
   assert(other->is_valid());
 
-  // Add your implementation here
+  // simple chromosomes are not complex enough to recombine
+  if(order_.size() < 3) {
+    return make_pair(this->clone(), other->clone());
+  }
+  
+  int secondIndex = (generator_() % (order_.size() - 1)) + 1;
+  
+  pair<Chromosome*, Chromosome*> returnPair(create_crossover_child(this, other, 0, secondIndex),
+					    create_crossover_child(other, this, 0, secondIndex));
+  return returnPair;			    
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -122,5 +136,9 @@ Chromosome::is_valid() const
 bool
 Chromosome::is_in_range(unsigned value, unsigned begin, unsigned end) const
 {
-  // Add your implementation here
+  if (find(order_.cbegin() + begin, order_.cbegin() + end, value) == order_.cend()) {
+    return false;
+  } else {
+    return true;
+  }
 }

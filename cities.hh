@@ -46,7 +46,7 @@ class Cities {
   friend std::istream& operator>>(std::istream& is, Cities& cities);
   friend std::ostream& operator<<(std::ostream& os, const Cities& cities);
 
- private:
+private:
   using cities_t = std::vector<coord_t>;
   cities_t cities_;
 };
