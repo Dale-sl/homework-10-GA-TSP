@@ -7,6 +7,9 @@
 #include <random>
 
 #include "chromosome.hh"
+#include "cities.hh"
+
+using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
 // Generate a completely random permutation from a list of cities
@@ -23,6 +26,7 @@ Chromosome::Chromosome(const Cities* cities_ptr)
 Chromosome::~Chromosome()
 {
   assert(is_valid());
+  
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -84,7 +88,11 @@ Chromosome::create_crossover_child(const Chromosome* p1, const Chromosome* p2,
 double
 Chromosome::get_fitness() const
 {
-  // Add your implementation here
+  if (calculate_total_distance() == 0) {
+    return 1e10;
+  } else {
+    return 1. / calculate_total_distance();
+  }
 }
 
 // A chromsome is valid if it has no repeated values in its permutation,
@@ -93,7 +101,19 @@ Chromosome::get_fitness() const
 bool
 Chromosome::is_valid() const
 {
-  // Add your implementation here
+  Cities::permutation_type testPermutation;
+  standardPermutation.reserve(order_.size());
+  standardPermutation.resize(order_.size());
+  iota(standardPermutation.begin(), standardPermutation.end(), 0);
+  
+  Cities::permutation_type sortedOrder(order_);
+  sort(sortedOrder.begin(), sortedOrder.end());
+  
+  if (sortedOrder == standardPermutation) {
+    return true;
+  } else {
+    return false;
+  }			  
 }
 
 // Find whether a certain value appears in a given range of the chromosome.
