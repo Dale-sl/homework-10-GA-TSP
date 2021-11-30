@@ -34,14 +34,14 @@ void
 Chromosome::mutate()
 {
   assert(is_valid());
-  int firstIndex = generator_() % (order_.size() - 1);
+  int firstIndex = generator_() % order_.size();
   int secondIndex;
   do {
-    secondIndex = generator_() % (order_.size() - 1);
+    secondIndex = generator_() % order_.size();
   } while (secondIndex == firstIndex && order_.size() != 1);
   int tempElement = order_[firstIndex];
   order_[firstIndex] = order_[secondIndex];
-  order_[secondIndex] = order_[firstIndex];
+  order_[secondIndex] = tempElement;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,10 @@ Chromosome::recombine(const Chromosome* other)
   if(order_.size() < 3) {
     return make_pair(this->clone(), other->clone());
   }
-  
+
+  // generates an index between 1 and the last index,
+  // so that when used in the exclusive range the crossover
+  // always has at least 1 element crossing over
   int secondIndex = (generator_() % (order_.size() - 1)) + 1;
   
   pair<Chromosome*, Chromosome*> returnPair(create_crossover_child(this, other, 0, secondIndex),
@@ -99,9 +102,12 @@ Chromosome::create_crossover_child(const Chromosome* p1, const Chromosome* p2,
 
 // Return a positive fitness value, with higher numbers representing
 // fitter solutions (shorter total-city traversal path).
+// uses the inverse function on distance to obtain fitness
 double
 Chromosome::get_fitness() const
 {
+  // avoid dividing by zero; return value technically arbitrary but
+  // having two cities on top of each other isn't an expected edge case
   if (calculate_total_distance() == 0) {
     return 1e10;
   } else {
@@ -115,14 +121,18 @@ Chromosome::get_fitness() const
 bool
 Chromosome::is_valid() const
 {
-  Cities::permutation_type testPermutation;
+  // standard perm in the form {0, 1, 2, ...}
+  Cities::permutation_t standardPermutation;
   standardPermutation.reserve(order_.size());
   standardPermutation.resize(order_.size());
   iota(standardPermutation.begin(), standardPermutation.end(), 0);
-  
-  Cities::permutation_type sortedOrder(order_);
+
+  // order sorted ascending
+  Cities::permutation_t sortedOrder(order_);
   sort(sortedOrder.begin(), sortedOrder.end());
-  
+
+  // checks order has correct number of elements and doesn't skip
+  // whole numbers.
   if (sortedOrder == standardPermutation) {
     return true;
   } else {
