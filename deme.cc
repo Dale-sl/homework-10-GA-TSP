@@ -34,7 +34,7 @@ Deme::Deme(const Cities* cities_ptr, unsigned pop_size, double mut_rate)
 // Clean up as necessary
 Deme::~Deme()
 {
-  for (int i=0; i<pop_.size(); i++){
+  for (unsigned int i=0; i<pop_.size(); i++){
     delete(pop_[i]);                    //dealocated everything in the vector and then delete the vector
   }
   //delete(pop_);
@@ -52,7 +52,7 @@ void Deme::compute_next_generation()
 {
     std::uniform_real_distribution<double> distribution(0.0, 1.0);
   std::vector<Chromosome*> new_children;    //vector constructed for the new children later
-  for (int i=0; i<(pop_.size()/2); i++){    //for the population vector with size pop_.size()/2
+  for (unsigned int i=0; i<(pop_.size()/2); i++){    //for the population vector with size pop_.size()/2
     Chromosome* parent_x = select_parent();   //get a parent x with the select_parent method
     Chromosome* parent_y = select_parent();   //get a perent y with the select_parent method
     //double random_number_x = static_cast <double> (rand()) / static_cast <double> (RAND_MAX);   //get a number between 0 and 1 for x
@@ -68,7 +68,7 @@ void Deme::compute_next_generation()
     std::pair<Chromosome*, Chromosome*> a = parent_x->recombine(parent_y);  //recombine parent x and y to make a pair of two children stored in a
     new_children.push_back(a.first);    //put the first child of the pair in the new vector 
     new_children.push_back(a.second);   //put the second child of the pair in the new vector
-    for (int i = 0; i<pop_.size(); i++){  //delete everything in the original population vector and then delete the vector entirely
+    for (unsigned int i = 0; i<pop_.size(); i++){  //delete everything in the original population vector and then delete the vector entirely
       delete pop_[i];
     }
     //delete pop_;
@@ -80,14 +80,12 @@ void Deme::compute_next_generation()
 const Chromosome* Deme::get_best() const    
 {
   Chromosome* c;          
-  double max = 0.0; 
-  Chromosome* cmax;
-  for (int i=0; i<pop_.size(); i++){      //look at everything in the population vector
+  double max = 0.0;
+  for (unsigned int i=0; i<pop_.size(); i++){      //look at everything in the population vector
    c = pop_[i];                          //get the value of each chromosome 
    double fitness = c->get_fitness();   //get the fitness of each chromosome
    if (fitness > max){                    //find the maximum fitness value by checking every elements fitness value and replacing the current max if the next one is greated than the max
      max = fitness;
-     cmax = c;
    }
   }
   return c;                             //return a copy of the chromosome with the highest fitness
@@ -98,7 +96,7 @@ const Chromosome* Deme::get_best() const
 Chromosome* Deme::select_parent()
 {
   double sum = 0;               //set sum to 0
-  for (int i=0; i<pop_.size(); i++){    //the fitness values for all of the chromosomes in the population vector
+  for (unsigned int i=0; i<pop_.size(); i++){    //the fitness values for all of the chromosomes in the population vector
     double fitness = pop_[i]->get_fitness();    
     sum += fitness;             //add it to the sum 
 
@@ -107,12 +105,12 @@ Chromosome* Deme::select_parent()
   std::uniform_real_distribution<double> distribution(0.0, sum);
   double random_number = distribution(Deme::generator_);
   std::vector<Chromosome*> decending_chromosomes;   //make a new vector for the chromosomes in decending order
-  for (int i=0; i<pop_.size(); i++){                //copy the pop_ vector to the decending chromosome vector
+  for (unsigned int i=0; i<pop_.size(); i++){                //copy the pop_ vector to the decending chromosome vector
     decending_chromosomes.push_back(pop_[i]);
   }
   sort(decending_chromosomes.begin(), decending_chromosomes.end(), compare_fitness);    //sort the decending_chromosome vector in decending order
   double running_sum = 0;       //make a new sum
-  for (int i=0; i<decending_chromosomes.size(); i++){   //do the roulette algorithm
+  for (unsigned int i=0; i<decending_chromosomes.size(); i++){   //do the roulette algorithm
     if(decending_chromosomes[i]->get_fitness()+running_sum > random_number){    //if the finess value of the chromosome is greater than that of the random number
       return decending_chromosomes[i];      //return the chromosome
     }

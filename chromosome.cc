@@ -59,10 +59,8 @@ Chromosome::recombine(const Chromosome* other)
     return make_pair(this->clone(), other->clone());
   }
 
-  // generates an index between 1 and the last index,
-  // so that when used in the exclusive range the crossover
-  // always has at least 1 element crossing over
-  unsigned secondIndex = (generator_() % (order_.size() - 1)) + 1;
+  // picks an index near the middle to split for crossover
+  unsigned secondIndex = order_.size() / 2;
   
   pair<Chromosome*, Chromosome*> returnPair(create_crossover_child(this, other, 0, secondIndex),
 					    create_crossover_child(other, this, 0, secondIndex));
@@ -147,8 +145,7 @@ Chromosome::is_valid() const
 bool
 Chromosome::is_in_range(unsigned value, unsigned begin, unsigned end) const
 {
-  auto test = find(order_.cbegin() + begin, order_.cbegin() + end, value);
-  if (*find(order_.cbegin() + begin, order_.cbegin() + end, value) == end) {
+  if (find(order_.cbegin() + begin, order_.cbegin() + end, value) == order_.cbegin() + end) {
     return false;
   } else {
     return true;
