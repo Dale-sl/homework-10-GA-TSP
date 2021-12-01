@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cassert>
 #include <random>
+#include <iostream>
 
 #include "chromosome.hh"
 #include "cities.hh"
@@ -61,7 +62,7 @@ Chromosome::recombine(const Chromosome* other)
   // generates an index between 1 and the last index,
   // so that when used in the exclusive range the crossover
   // always has at least 1 element crossing over
-  int secondIndex = (generator_() % (order_.size() - 1)) + 1;
+  unsigned secondIndex = (generator_() % (order_.size() - 1)) + 1;
   
   pair<Chromosome*, Chromosome*> returnPair(create_crossover_child(this, other, 0, secondIndex),
 					    create_crossover_child(other, this, 0, secondIndex));
@@ -146,7 +147,8 @@ Chromosome::is_valid() const
 bool
 Chromosome::is_in_range(unsigned value, unsigned begin, unsigned end) const
 {
-  if (find(order_.cbegin() + begin, order_.cbegin() + end, value) == order_.cend()) {
+  auto test = find(order_.cbegin() + begin, order_.cbegin() + end, value);
+  if (*find(order_.cbegin() + begin, order_.cbegin() + end, value) == end) {
     return false;
   } else {
     return true;

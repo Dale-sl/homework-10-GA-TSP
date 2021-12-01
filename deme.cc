@@ -25,8 +25,8 @@ bool compare_fitness(Chromosome*a, Chromosome*b){     //helper function outside 
 Deme::Deme(const Cities* cities_ptr, unsigned pop_size, double mut_rate)
 {
   for(unsigned int i=0; i<pop_size; i++){
-    Chromosome a_chromosome = Chromosome(cities_ptr);   //make pop_size chromosomes 
-    pop_.push_back(&a_chromosome);                     //push it back to the population vector 
+    Chromosome* a_chromosome = new Chromosome(cities_ptr);   //make pop_size chromosomes 
+    pop_.push_back(a_chromosome);                     //push it back to the population vector 
   }
   mut_rate_ = mut_rate;                             //make the mut_rate_ in the header file equal to the thing in the constructor
 }
